@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Backlog Styling
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Styles the ticket status in our backlog.
 // @author       You
 // @match        https://roger-team.atlassian.net/*
@@ -78,34 +78,45 @@
     border-radius: 3px;
     padding: 0 6px !important;
     font-weight: 500;
+    min-width: initial;
 }
 
 .ghx-plan-extra-fields [data-tooltip="Status: Planning"],
 .ghx-plan-extra-fields [data-tooltip="Status: To Do"],
-.ghx-plan-extra-fields [data-tooltip="Status: Blocked"]
+.ghx-plan-extra-fields [data-tooltip="Status: New"]
 {
     color: var(--ds-text,#42526E);
     background-color: var(--ds-background-neutral,#DFE1E6);
 }
 
-.ghx-plan-extra-fields [data-tooltip="Status: Ready for Development"],
-.ghx-plan-extra-fields [data-tooltip="Status: In Progress"],
-.ghx-plan-extra-fields [data-tooltip="Status: Code Review"],
+.ghx-plan-extra-fields [data-tooltip="Status: Blocked"]
+{
+    color: var(--ds-text,#DE1306);
+    background-color: var(--ds-background-neutral,#FEEBEA);
+}
+
 .ghx-plan-extra-fields [data-tooltip="Status: Ready for test"],
 .ghx-plan-extra-fields [data-tooltip="Status: Test"],
-.ghx-plan-extra-fields [data-tooltip="Status: Acceptance Test"],
-.ghx-plan-extra-fields [data-tooltip="Status: In Progress"],
-.ghx-plan-extra-fields [data-tooltip="Status: Ready for Deployment"]
+.ghx-plan-extra-fields [data-tooltip="Status: Acceptance Test"]
 {
-    color: var(--ds-text-information,#0747A6);
-    background-color: var(--ds-background-information,#DEEBFF);
+    color: var(--ds-text,#863DFF);
+    background-color: var(--ds-background-neutral,#F4EEFF);
+}
+
+.ghx-plan-extra-fields [data-tooltip="Status: Ready for Development"],
+.ghx-plan-extra-fields [data-tooltip="Status: In Progress"],
+.ghx-plan-extra-fields [data-tooltip="Status: Code Review"]
+{
+    color: var(--ds-text-information,#0088F5);
+    background-color: var(--ds-background-information,#E7F4FF);
 }
 
 .ghx-plan-extra-fields [data-tooltip="Status: Done"],
+.ghx-plan-extra-fields [data-tooltip="Status: Ready for Deployment"],
 .ghx-plan-extra-fields [data-tooltip="Status: Won&#39;t Do"]
 {
-    color: var(--ds-text-success,#006644);
-    background-color: var(--ds-background-success,#E3FCEF);
+    color: var(--ds-text-success,#01A51B);
+    background-color: var(--ds-background-success,#E5FDE8);
 }
         `
         const head = document.querySelector('head');
