@@ -1,12 +1,13 @@
 // ==UserScript==
 // @name         Backlog Styling
 // @namespace    http://tampermonkey.net/
-// @version      0.3
+// @version      0.4
 // @description  Styles the ticket status in our backlog.
 // @author       You
 // @match        https://roger-team.atlassian.net/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
 // @grant        none
+// @run-at       document-body
 // ==/UserScript==
 
 (function() {
@@ -122,4 +123,6 @@
         const head = document.querySelector('head');
         head.append(styleElem);
     }
+
+    initInterval();
 })();
