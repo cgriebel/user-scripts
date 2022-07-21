@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Playground Links
 // @namespace    http://tampermonkey.net/
-// @version      0.2
+// @version      0.3
 // @description  Adds links to our playgrounds and jira tickets to the PR title.
 // @author       You
 // @match        https://github.com/*
@@ -16,11 +16,12 @@
 
     function onLocationChange()
     {
-        if(/RogerAI\/.*\/pull\/\d/.test(window.location.pathname)) initPr();
+        initPr();
     }
 
     function initPr()
     {
+        if(!/RogerAI\/.*\/pull\/\d/.test(window.location.pathname)) return;
         addJiraLink();
         addPlaygroundLink();
     }
@@ -30,7 +31,8 @@
     {
         // Check title for playground tag
         const titleElem = getTitleElement();
-        const titleText = titleElem?.textContent;
+        if(!titleElem) return;
+        const titleText = titleElem.textContent ?? "";
         if(!/\[playground\]/i.test(titleText)) return;
 
         // Check for an existing link
@@ -52,6 +54,7 @@
     function addJiraLink()
     {
         const titleElem = getTitleElement();
+        if(!titleElem) return;
         const titleText = titleElem?.textContent;
         const match = titleText.match(/\[([A-Za-z]+\-\d+)\]/)
         if(!match.length) return;
@@ -106,6 +109,10 @@
         window.addEventListener('locationchange', function () {
             onLocationChange();
         });
+
+        // this is lazy but we'll loose the links if the title is edited
+        initPr();
+        setInterval(() => initPr(), 250);
     }
 
     const dataUris = {
