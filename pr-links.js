@@ -15,79 +15,157 @@
     function onLocationChange()
     {
         initPr();
+        initCompare();
+        initCreatePr();
+    }
+
+    function initCompare()
+    {
+        if(!/RogerAI\/.*\/compare\//.test(window.location.pathname)) return;
+        compare.addJiraLinks();
     }
 
     function initPr()
     {
         if(!/RogerAI\/.*\/pull\/\d/.test(window.location.pathname)) return;
-        addJiraLink();
-        addPlaygroundLink();
-        addPlaygroundTicketLinks();
+        pr.addJiraLink();
+        pr.addPlaygroundLink();
+        pr.addPlaygroundTicketLinks();
     }
 
-    function replaceSegment(reg, buildLink)
+    function initCreatePr()
     {
-        const titleElement = document.querySelector('.gh-header-title .js-issue-title');
-        if(!titleElement) return;
-        const titleNodes = [...titleElement.childNodes];
+        if(!/RogerAI\/.*\/compare\//.test(window.location.pathname)) return;
+        const header = document.querySelector('.compare-pr-header.Subhead h1')
+        if(header?.textContent !== 'Open a pull request' || header.getAttribute('data-cg-init')) return;
+        createPr.addJiraTag();
+        createPr.assignSelf();
+        header.setAttribute('data-cg-init', true)
+    }
 
-        const sanitizedText = titleNodes
-            .filter(n => n.nodeType === Node.TEXT_NODE)
-            .map(n => n.textContent)
-            .join(" ");
+    const jiraRegex = /\[([A-Za-z]+\-\d+)\]/;
+    const matchToJiraLink = match => `https://roger-team.atlassian.net/browse/${match[1]}`;
 
-        if(!sanitizedText.match(reg)?.length) return;
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
-        const newNodes = titleNodes.reduce((acc, n) => {
-            const titleText = n.textContent;
-            const match = titleText.match(reg);
-            if(n.nodeType === Node.TEXT_NODE && match?.length) {
-                var parts = titleText.split(match[0]);
-                acc.push(document.createTextNode(parts[0]))
-                var link = document.createElement('a');
-                link.setAttribute("target", "_blank")
-                link.text = match[0]
-                link.setAttribute("href", buildLink(match));
-                acc.push(link);
-                if(parts[1]) {
-                    acc.push(document.createTextNode(parts[1]))
-                }
-            } else {
-                acc.push(n);
+    const compare = {
+        addJiraLinks(){
+            var loading = document.querySelector('[aria-label="Loading Commits"]');
+            if(loading)
+            {
+                setTimeout(compare.addJiraLinks, 20);
+                return;
             }
-            return acc;
-        }, [])
 
-        titleNodes.forEach(n => titleElement.removeChild(n));
-        newNodes.forEach(n => titleElement.appendChild(n));
+            const rowNodes = [...document.querySelectorAll('.js-commits-list-item')]
+            rowNodes.forEach(row => {
+                const titleElem = row.querySelector('.js-details-container.Details > p');
+
+                console.log(titleElem)
+                const title = titleElem.textContent;
+                const match = title.match(jiraRegex);
+                if(!match) return;
+                const link = matchToJiraLink(match);
+                console.log(link)
+                const button = document.createElement('div');
+                button.setAttribute("class", "d-inline-block")
+                button.innerHTML = `<a href="${link}" target="_blank">Jira</a>`
+
+                const actions = row.children[1];
+                actions.insertBefore(button, actions.children[0])
+            })
+        }
     }
 
-    function addPlaygroundLink()
-    {
-        const prNumber = document.querySelector('.gh-header-title .f1-light').textContent.replace('#','');
-        replaceSegment(/\[playground\]/i, match => `https://pr-${prNumber}.playgrounds.corpayone.com`);
+    const pr = {
+        replaceSegment(reg, buildLink)
+        {
+            const titleElement = document.querySelector('.gh-header-title .js-issue-title');
+            if(!titleElement) return;
+            const titleNodes = [...titleElement.childNodes];
+
+            const sanitizedText = titleNodes
+                .filter(n => n.nodeType === Node.TEXT_NODE)
+                .map(n => n.textContent)
+                .join(" ");
+
+            if(!sanitizedText.match(reg)?.length) return;
+
+            const newNodes = titleNodes.reduce((acc, n) => {
+                const titleText = n.textContent;
+                const match = titleText.match(reg);
+                if(n.nodeType === Node.TEXT_NODE && match?.length) {
+                    var parts = titleText.split(match[0]);
+                    acc.push(document.createTextNode(parts[0]))
+                    var link = document.createElement('a');
+                    link.setAttribute("target", "_blank")
+                    link.text = match[0]
+                    link.setAttribute("href", buildLink(match));
+                    acc.push(link);
+                    if(parts[1]) {
+                        acc.push(document.createTextNode(parts[1]))
+                    }
+                } else {
+                    acc.push(n);
+                }
+                return acc;
+            }, [])
+
+            titleNodes.forEach(n => titleElement.removeChild(n));
+            newNodes.forEach(n => titleElement.appendChild(n));
+        },
+        addPlaygroundLink()
+        {
+            const prNumber = document.querySelector('.gh-header-title .f1-light').textContent.replace('#','');
+            pr.replaceSegment(/\[playground\]/i, match => `https://pr-${prNumber}.playgrounds.corpayone.com`);
+        },
+        addJiraLink()
+        {
+            pr.replaceSegment(jiraRegex, matchToJiraLink);
+        },
+        addPlaygroundTicketLinks()
+        {
+            const prefixes = {
+                "admin": "roger-admin",
+                "api": "Roger-Backend",
+                "data-entry": "roger-data-entry",
+                "economic": "roger-apps-economic",
+                "identity": "roger-identity",
+                "ripe": "ripe",
+                "web": "Roger-Web",
+            };
+
+            const prefixReg = Object.keys(prefixes).join("|");
+            const regex = new RegExp(`\\[((${prefixReg}):pull\\-(\\d+))\\]`);
+            pr.replaceSegment(regex, match => `https://github.com/RogerAI/${prefixes[match[2]]}/pull/${match[3]}`);
+        }
     }
 
-    function addJiraLink()
-    {
-        replaceSegment(/\[([A-Za-z]+\-\d+)\]/, match => `https://roger-team.atlassian.net/browse/${match[1]}`);
-    }
+    const createPr = {
+        addJiraTag() {
+            const sourceBranch = window.location.pathname.split(':')[2];
+            const match = sourceBranch.match(/([a-zA-Z]+)\/([A-Z]+\-\d+)/);;
+            if(!match) return;
+            console.log("Add Jira Tag")
+            const branchType = match[1];
+            const ticketId = match[2];
+            const ticketTag = `[${ticketId}]`;
+            const titleElem = document.querySelector('#pull_request_title');
+            const title = titleElem.value;
+            const titleTicketId = ticketId.replace('-', ' ');
+            let titleMsg = title.replace(RegExp(`${branchType}/${titleTicketId} `, 'i'), '');
 
-    function addPlaygroundTicketLinks()
-    {
-        const prefixes = {
-            "admin": "roger-admin",
-            "api": "Roger-Backend",
-            "data-entry": "roger-data-entry",
-            "economic": "roger-apps-economic",
-            "identity": "roger-identity",
-            "ripe": "ripe",
-            "web": "Roger-Web",
-        };
-
-        const prefixReg = Object.keys(prefixes).join("|");
-        const regex = new RegExp(`\\[((${prefixReg}):pull\\-(\\d+))\\]`);
-        replaceSegment(regex, match => `https://github.com/RogerAI/${prefixes[match[2]]}/pull/${match[3]}`);
+            // avoid duplicates from a refresh
+            titleMsg = titleMsg.replaceAll(`${ticketTag} `, '');
+            titleMsg = capitalizeFirstLetter(titleMsg);
+            titleElem.value = `${ticketTag} ${titleMsg}`;
+        },
+        assignSelf(){
+            var assignSelfBtn = document.querySelector('.js-issue-assign-self')
+            assignSelfBtn?.click()
+        }
     }
 
     function initialize()
@@ -117,9 +195,9 @@
             onLocationChange();
         });
 
-        // this is lazy but we'll loose the links if the title is edited
         initPr();
         setInterval(() => initPr(), 250);
+        setInterval(() => initCreatePr(), 250);
     }
 
     initialize();
