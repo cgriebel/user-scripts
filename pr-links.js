@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Playground Links
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Adds links to our playgrounds and jira tickets to the PR title.
 // @author       You
 // @match        https://github.com/*
