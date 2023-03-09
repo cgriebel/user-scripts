@@ -9,35 +9,31 @@
 // @grant        none
 // ==/UserScript==
 
-(function() {
+(function () {
     'use strict';
 
-    function onLocationChange()
-    {
+    function onLocationChange() {
         initPr();
         initCompare();
         initCreatePr();
     }
 
-    function initCompare()
-    {
-        if(!/RogerAI\/.*\/compare\//.test(window.location.pathname)) return;
+    function initCompare() {
+        if (!/RogerAI\/.*\/compare\//.test(window.location.pathname)) return;
         compare.addJiraLinks();
     }
 
-    function initPr()
-    {
-        if(!/RogerAI\/.*\/pull\/\d/.test(window.location.pathname)) return;
+    function initPr() {
+        if (!/RogerAI\/.*\/pull\/\d/.test(window.location.pathname)) return;
         pr.addJiraLink();
         pr.addPlaygroundLink();
         pr.addPlaygroundTicketLinks();
     }
 
-    function initCreatePr()
-    {
-        if(!/RogerAI\/.*\/compare\//.test(window.location.pathname)) return;
+    function initCreatePr() {
+        if (!/RogerAI\/.*\/compare\//.test(window.location.pathname)) return;
         const header = document.querySelector('.compare-pr-header.Subhead h1')
-        if(header?.textContent !== 'Open a pull request' || header.getAttribute('data-cg-init')) return;
+        if (header?.textContent !== 'Open a pull request' || header.getAttribute('data-cg-init')) return;
         createPr.addJiraTag();
         createPr.assignSelf();
         header.setAttribute('data-cg-init', true)
@@ -51,10 +47,9 @@
     }
 
     const compare = {
-        addJiraLinks(){
+        addJiraLinks() {
             var loading = document.querySelector('[aria-label="Loading Commits"]');
-            if(loading)
-            {
+            if (loading) {
                 setTimeout(compare.addJiraLinks, 20);
                 return;
             }
@@ -66,7 +61,7 @@
                 console.log(titleElem)
                 const title = titleElem.textContent;
                 const match = title.match(jiraRegex);
-                if(!match) return;
+                if (!match) return;
                 const link = matchToJiraLink(match);
                 console.log(link)
                 const button = document.createElement('div');
@@ -80,10 +75,9 @@
     }
 
     const pr = {
-        replaceSegment(reg, buildLink)
-        {
+        replaceSegment(reg, buildLink) {
             const titleElement = document.querySelector('.gh-header-title .js-issue-title');
-            if(!titleElement) return;
+            if (!titleElement) return;
             const titleNodes = [...titleElement.childNodes];
 
             const sanitizedText = titleNodes
@@ -91,12 +85,12 @@
                 .map(n => n.textContent)
                 .join(" ");
 
-            if(!sanitizedText.match(reg)?.length) return;
+            if (!sanitizedText.match(reg)?.length) return;
 
             const newNodes = titleNodes.reduce((acc, n) => {
                 const titleText = n.textContent;
                 const match = titleText.match(reg);
-                if(n.nodeType === Node.TEXT_NODE && match?.length) {
+                if (n.nodeType === Node.TEXT_NODE && match?.length) {
                     var parts = titleText.split(match[0]);
                     acc.push(document.createTextNode(parts[0]))
                     var link = document.createElement('a');
@@ -104,7 +98,7 @@
                     link.text = match[0]
                     link.setAttribute("href", buildLink(match));
                     acc.push(link);
-                    if(parts[1]) {
+                    if (parts[1]) {
                         acc.push(document.createTextNode(parts[1]))
                     }
                 } else {
@@ -116,17 +110,14 @@
             titleNodes.forEach(n => titleElement.removeChild(n));
             newNodes.forEach(n => titleElement.appendChild(n));
         },
-        addPlaygroundLink()
-        {
-            const prNumber = document.querySelector('.gh-header-title .f1-light').textContent.replace('#','');
+        addPlaygroundLink() {
+            const prNumber = document.querySelector('.gh-header-title .f1-light').textContent.replace('#', '');
             pr.replaceSegment(/\[playground\]/i, match => `https://pr-${prNumber}.playgrounds.corpayone.com`);
         },
-        addJiraLink()
-        {
+        addJiraLink() {
             pr.replaceSegment(jiraRegex, matchToJiraLink);
         },
-        addPlaygroundTicketLinks()
-        {
+        addPlaygroundTicketLinks() {
             const prefixes = {
                 "admin": "roger-admin",
                 "api": "Roger-Backend",
@@ -147,7 +138,7 @@
         addJiraTag() {
             const sourceBranch = window.location.pathname.split(':')[2];
             const match = sourceBranch.match(/([a-zA-Z]+)\/([A-Z]+\-\d+)/);;
-            if(!match) return;
+            if (!match) return;
             console.log("Add Jira Tag")
             const branchType = match[1];
             const ticketId = match[2];
@@ -162,14 +153,13 @@
             titleMsg = capitalizeFirstLetter(titleMsg);
             titleElem.value = `${ticketTag} ${titleMsg}`;
         },
-        assignSelf(){
+        assignSelf() {
             var assignSelfBtn = document.querySelector('.js-issue-assign-self')
             assignSelfBtn?.click()
         }
     }
 
-    function initialize()
-    {
+    function initialize() {
         console.log("Initializing Playground Link Script");
         let oldPushState = history.pushState;
         history.pushState = function pushState() {
