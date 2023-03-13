@@ -136,7 +136,7 @@
 
     const createPr = {
         addJiraTag() {
-            const sourceBranch = window.location.pathname.split(':')[2];
+            const sourceBranch = document.querySelector('#head-ref-selector .Button-label span').textContent;
             const match = sourceBranch.match(/([a-zA-Z]+)\/([A-Z]+\-\d+)/);;
             if (!match) return;
             console.log("Add Jira Tag")

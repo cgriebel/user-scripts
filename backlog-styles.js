@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Backlog Styling
 // @namespace    http://tampermonkey.net/
-// @version      0.4
+// @version      0.5
 // @description  Styles the ticket status in our backlog.
 // @author       You
 // @match        https://roger-team.atlassian.net/*
@@ -82,7 +82,6 @@
     min-width: initial;
 }
 
-.ghx-plan-extra-fields [data-tooltip="Status: Planning"],
 .ghx-plan-extra-fields [data-tooltip="Status: To Do"],
 .ghx-plan-extra-fields [data-tooltip="Status: New"]
 {
@@ -90,7 +89,8 @@
     background-color: var(--ds-background-neutral,#DFE1E6);
 }
 
-.ghx-plan-extra-fields [data-tooltip="Status: Blocked"]
+.ghx-plan-extra-fields [data-tooltip="Status: Blocked"],
+.ghx-plan-extra-fields [data-tooltip="Status: Returned for Info"]
 {
     color: var(--ds-text,#DE1306);
     background-color: var(--ds-background-neutral,#FEEBEA);
@@ -104,7 +104,6 @@
     background-color: var(--ds-background-neutral,#F4EEFF);
 }
 
-.ghx-plan-extra-fields [data-tooltip="Status: Ready for Development"],
 .ghx-plan-extra-fields [data-tooltip="Status: In Progress"],
 .ghx-plan-extra-fields [data-tooltip="Status: Code Review"]
 {
@@ -116,9 +115,24 @@
 .ghx-plan-extra-fields [data-tooltip="Status: Ready for Deployment"],
 .ghx-plan-extra-fields [data-tooltip="Status: Won&#39;t Do"]
 {
-    color: var(--ds-text-success,#01A51B);
+    color: var(--ds-text-success,#009417);
     background-color: var(--ds-background-success,#E5FDE8);
 }
+
+.ghx-plan-extra-fields [data-tooltip="Status: Planning"]
+
+{
+    color: var(--ds-text-information,#FF8B00);
+    background-color: var(--ds-background-information,#FFFAE6);
+}
+
+.ghx-plan-extra-fields [data-tooltip="Status: Ready for Development"]
+
+{
+    color: var(--ds-text-information,#009A9A);
+    background-color: var(--ds-background-information,#E5FEFC);
+}
+
         `
         const head = document.querySelector('head');
         head.append(styleElem);
