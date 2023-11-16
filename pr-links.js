@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Playground Links
 // @namespace    http://tampermonkey.net/
-// @version      0.6
+// @version      1.0
 // @description  Adds links to our playgrounds and jira tickets to the PR title.
 // @author       You
 // @match        https://github.com/*
@@ -112,7 +112,14 @@
         },
         addPlaygroundLink() {
             const prNumber = document.querySelector('.gh-header-title .f1-light').textContent.replace('#', '');
-            pr.replaceSegment(/\[playground\]/i, match => `https://pr-${prNumber}.playgrounds.corpayone.com`);
+            pr.replaceSegment(/\[playground\]/i, match => {
+                let site = "";
+                if(window.location.pathname.includes("roger-admin"))
+                {
+                    site = "-admin";
+                }
+                return `https://pr-${prNumber}${site}.playgrounds.corpayone.com`
+            });
         },
         addJiraLink() {
             pr.replaceSegment(jiraRegex, matchToJiraLink);
