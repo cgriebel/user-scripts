@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Backlog Styling
 // @namespace    http://tampermonkey.net/
-// @version      0.5
+// @version      0.6
 // @description  Styles the ticket status in our backlog.
-// @author       You
+// @author       https://github.com/cgriebel
 // @match        https://roger-team.atlassian.net/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
 // @grant        none

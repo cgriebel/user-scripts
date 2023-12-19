@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         New Team Auto-Fill
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Automatically fills all inputs when creating a new team
-// @author       cgriebel
+// @author       https://github.com/cgriebel
 // @match        *://*.corpayone.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
 // @grant        unsafeWindow

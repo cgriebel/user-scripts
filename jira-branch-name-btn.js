@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Get Branch Name
 // @namespace    http://tampermonkey.net/
-// @version      0.1
+// @version      0.2
 // @description  Uses ticket type and description to generate a branch name
-// @author       You
+// @author       https://github.com/cgriebel
 // @match        https://roger-team.atlassian.net/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
 // @grant        none

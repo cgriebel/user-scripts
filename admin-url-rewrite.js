@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Admin URL Rewrite
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Automatically updates admin links to point to the internal or external site depending on your settings.
-// @author       You
+// @author       https://github.com/cgriebel
 // @match        https://roger-team.atlassian.net/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=atlassian.net
 // @require      https://openuserjs.org/src/libs/sizzle/GM_config.js

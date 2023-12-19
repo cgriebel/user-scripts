@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Playground Links
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Adds links to our playgrounds and jira tickets to the PR title.
-// @author       You
+// @author       https://github.com/cgriebel
 // @match        https://github.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=github.com
 // @grant        none
