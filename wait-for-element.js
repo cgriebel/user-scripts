@@ -1,10 +1,11 @@
 // ==UserScript==
-// @name         Wait for key elements
-// @namespace    http://tampermonkey.net/
-// @version      0.1
-// @description  A utility function, for Greasemonkey scripts, that detects and handles dynamic content.
-// @author       https://github.com/cgriebel
-// @grant        none
+// @name          Wait for key elements
+// @namespace     http://tampermonkey.net/
+// @version       0.1
+// @description   A utility function, for Greasemonkey scripts, that detects and handles dynamic content.
+// @author        https://github.com/cgriebel
+// @grant         none
+// @include       *
 // ==/UserScript==
 
 /*--- waitForKeyElements():  
